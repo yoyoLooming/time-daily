@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>time daily</title>
+    <style>
+        .info-field {
+            position: fixed;
+            right: 100px;
+            top: 200px;
+            padding: 20px 20px 20px 20px;
+            background-color: lightgray;
+        }
+
+        .log-field {
+            margin: 100px 0 100px 200px;
+        }
+
+
+        .button-field {
+            height: 100px;
+            float: left;
+        }
+
+        .operation-button {
+            width: 150px;
+            height: 90px;
+            margin: 0 20px;
+        }
+
+        .input-field {
+            height: 100px;
+        }
+
+        .input-start-select {
+            width: 100px;
+            margin: 50px;
+        }
+
+
+        .input-start-button {
+            width: 50px;
+        }
+
+
+        .tasks-field {
+            margin: 50px 0 100px 100px;
+        }
+
+        .delete-task-button {
+            padding: 1px 4px;
+            background-color: red;
+            color: white;
+            border-width: 2px;
+        }
+
+        .delete-task-button:hover {
+            background-color: orange;
+        }
+
+        .delete-task-button:active {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="info-field" id="info-field">
+        <div>当前时间</div>
+        <div id="time-display"></div>
+        <div>当前任务</div>
+        <div id="task-display">Null</div>
+        <div id="task-passed-time"></div>
+    </div>
+    <div class="log-field" id="log-field">
+        log:
+        <table class="log-list" id="log-list">
+            <tr>
+                <td>12:00</td>
+                <td>~</td>
+                <td>13:12</td>
+                <td>default</td>
+                <td>72</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="button-field" id="button-field">
+        <button class="operation-button" id="button-push">push</button>
+        <button class="operation-button" id="button-start">start</button>
+        <button class="operation-button" id="button-end">end</button>
+    </div>
+
+    <div class="input-field" id="input-field">
+        <div id="input-push" hidden>
+            task name: <input type="text" id="input-push-name"><br>
+            expected time: <input type="text" id="input-push-time"><br>
+            <button id="button-push-ok">ok</button>
+        </div>
+
+        <div id="input-start" hidden>
+            <select class="input-start-select" id="input-start-select">
+                <!-- <option value="default">default</option> -->
+            </select>
+            <button class="input-start-button" id="input-start-button">学!</button>
+        </div>
+    </div>
+
+    <table class="tasks-field" id="tasks-field">
+        <!-- <tr id="tasks-default">
+            <td id="tasks-name-default">default</td>
+            <td>(</td>
+            <td id="tasks-time-used-default">20</td>
+            <td>/</td>
+            <td id="tasks-time-expected-default">80</td>
+            <td>)</td>
+            <td><button class="delete-task-button" id="delete-button-default">X</button></td>
+        </tr> -->
+    </table>
+
+    <script>
+        let tasks;
+
+
+        let now = new Date();
+        let today = now.getDay();
+        let tomonth = now.getMonth();
+
+        let dailyLog = [];
+
+
+
+        const music = new Audio('horn.mp3');
+
+        let startTime;
+        let taskOnGoing;
+
+        // display field
+        let timeDisplay = document.querySelector('#time-display');
+        let taskDisplay = document.querySelector('#task-display');
+        let taskPassedTime = document.querySelector('#task-passed-time');
+
+        // log field
+        let logField = document.querySelector('#log-field');
+        let logList = document.querySelector('#log-list');
+
+        // push field
+        let pushbt = document.querySelector('#button-push');
+        let inputPushField = document.querySelector('#input-push');
+        let pushok = document.querySelector('#button-push-ok');
+        let inputPushName = document.querySelector('#input-push-name');
+        let inputPushTime = document.querySelector('#input-push-time');
+
+        // start field
+        let startbt = document.querySelector('#button-start');
+        let inputStartField = document.querySelector('#input-start');
+        let inputStartSelect = document.querySelector('#input-start-select');
+        let startok = document.querySelector('#input-start-button');
+
+        // end field
+        let endbt = document.querySelector('#button-end');
+
+        // reverse field
+        let reversebt = document.querySelector('#button-reverse');
+
+        // tasks field
+        let tasksField = document.querySelector('#tasks-field');
+
+
+
+        function init() {
+            if (dailyLog === null) {
+                dailyLog = [];
+            }
+        }
+        init()
+
+        pushbt.addEventListener('click', pushStart);
+        pushok.addEventListener('click', pushEnd);
+        function pushStart() {
+            inputPushField.hidden = false;
+        }
+        function pushEnd() {
+
+            let taskName = inputPushName.value;
+            let expectedTime = inputPushTime.value;
+            expectedTime = Number(expectedTime);
+            if (tasks[taskName] !== undefined) {
+                alert("tasks has existed");
+                return
+            }
+            if (isNaN(expectedTime)) {
+                alert('expected time is not a number');
+                return
+            }
+            inputPushName.value = '';
+            inputPushTime.value = '';
+            tasks[taskName] = {
+                id: (new Date()).getTime(),
+                passedTime: 0,
+                expectedTime,
+            };
+
+            // display new tasks
+            displayTask(taskName, 0, expectedTime);
+
+            inputPushField.hidden = true;
+        }
+
+        function displayTask(taskName, taskTimeUsed, taskTimeExpected) {
+
+            let newTask = document.createElement('tr');
+            newTask.setAttribute('id', 'tasks-' + tasks[taskName]['id']);
+
+            let newTaskName = document.createElement('td');
+            newTaskName.setAttribute('id', 'tasks-name-' + tasks[taskName]['id']);
+            newTaskName.append(taskName);
+
+            let leftBracket = document.createElement('td');
+            leftBracket.append('(');
+
+            let newTaskTimeUsed = document.createElement('td');
+            newTaskTimeUsed.setAttribute('id', 'tasks-time-used-' + tasks[taskName]['id']);
+            newTaskTimeUsed.append(taskTimeUsed);
+
+
+            let midLine = document.createElement('td');
+            midLine.append('/');
+
+            let newTaskTimeExpected = document.createElement('td');
+            newTaskTimeExpected.setAttribute('id', 'tasks-time-expected-' + tasks[taskName]['id']);
+            newTaskTimeExpected.append(taskTimeExpected);
+
+            let rightBracket = document.createElement('td');
+            rightBracket.append(')');
+
+            let deleteTD = document.createElement('td');
+            let deleteBT = document.createElement('button');
+            deleteBT.setAttribute('class', 'delete-tassk-button');
+            deleteBT.setAttribute('id', 'delete-button-' + tasks[taskName]['id']);
+            deleteBT.append('X');
+            deleteBT.addEventListener('click', function () {
+                delete tasks[taskName];
+                tasksField.removeChild(newTask);
+            });
+            deleteTD.append(deleteBT);
+
+            tasksField.prepend(newTask);
+            newTask.append(newTaskName);
+            newTask.append(leftBracket);
+            newTask.append(newTaskTimeUsed);
+            newTask.append(midLine);
+            newTask.append(newTaskTimeExpected);
+            newTask.append(rightBracket);
+            newTask.append(deleteTD);
+        }
+
+        // start a task...
+        startbt.addEventListener('click', startStart);
+        startok.addEventListener('click', startEnd);
+        function startStart() {
+            inputStartField.hidden = false;
+            for (let taskI in tasks) {
+                let newTaskOption = document.createElement('option');
+                newTaskOption.value = taskI;
+                newTaskOption.append(taskI);
+                inputStartSelect.append(newTaskOption);
+            }
+        }
+        function startEnd() {
+            inputStartField.hidden = true;
+            taskOnGoing = inputStartSelect[inputStartSelect.selectedIndex].value;
+            taskDisplay.innerHTML = taskOnGoing;
+            let now = new Date();
+            startTime = {
+                h: now.getHours(),
+                m: now.getMinutes(),
+            }
+            getTime();
+            while (inputStartSelect.hasChildNodes()) {
+                inputStartSelect.removeChild(inputStartSelect.lastChild);
+            }
+        }
+        // end field
+        endbt.addEventListener('click', function () {
+            let now = new Date();
+            let htime = now.getHours();
+            let mtime = now.getMinutes();
+            let usedTime = 60 * (htime - startTime.h) + mtime - startTime.m;
+            let newLog = document.createElement('tr');
+
+            // dailyLog.push(`${startTime.h}:${startTime.m} ~ ${htime}:${mtime} ${taskOnGoing} ${usedTime}`);
+            dailyLog.push({
+                startH: startTime.h,
+                startM: startTime.m,
+                endH: htime,
+                endM: mtime,
+                taskName: taskOnGoing,
+                usedTime,
+            })
+            newLog.innerHTML = `
+                    <td>${startTime.h}:${startTime.m}</td>
+                    <td>~</td>
+                    <td>${htime}:${mtime}</td>
+                    <td>${taskOnGoing}</td>
+                    <td>${usedTime}</td>
+                
+            `
+            logList.append(newLog);
+            tasks[taskOnGoing]['passedTime'] += 60 * (htime - startTime.h) + mtime - startTime.m;
+            taskOnGoing = null;
+            taskDisplay.innerText = 'Null';
+            taskPassedTime.innerText = '';
+        })
+
+
+
+
+        function getTime() {
+            let now = new Date();
+            let htime = now.getHours();
+            let mtime = now.getMinutes();
+
+            timeDisplay.innerHTML = '' + htime + ':' + mtime;
+
+            if (taskOnGoing !== null) {
+                let usedTime = (60 * (htime - startTime.h) + mtime - startTime.m)
+                taskPassedTime.innerHTML = usedTime;
+                if (tasks[taskOnGoing]['passedTime'] + usedTime === tasks[taskOnGoing]['expectedTime']) {
+                    music.play();
+                }
+                let taskOnGoingPassedTime = document.querySelector(`#tasks-time-used-${tasks[taskOnGoing]['id']}`);
+                taskOnGoingPassedTime.innerHTML = tasks[taskOnGoing]['passedTime'] + usedTime;
+            }
+        }
+        function save() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('log', JSON.stringify(dailyLog));
+        }
+        window.onbeforeunload = save;
+        taskOnGoing = null;
+        getTime();
+        setInterval(getTime, 60000);
+        if (today !== undefined && today === now.getDay()) {
+            tasks = JSON.parse(localStorage.getItem('tasks'));
+            for (let taskI in tasks) {
+                let oneTask = document.createElement('tr');
+                oneTask.setAttribute('id', 'tasks-' + tasks[taskI]['id']);
+                displayTask(taskI, tasks[taskI]['passedTime'], tasks[taskI]['expectedTime']);
+            }
+        } else {
+            today = now.getDay();
+            for (let taskI in tasks) {
+                // 啊啊, 这里也想记录下来啊...可恶.
+            }
+        }
+        dailyLog = JSON.parse(localStorage.getItem('log'));
+
+        if (localStorage.getItem('logLastMonth') != tomonth && localStorage.getItem('logLastDay') != today) {
+            dailyLog.push(`${tomonth}.${today}`);
+            localStorage.setItem('logLastDay', today);
+            localStorage.setItem('logLastMonth', tomonth);
+        }
+
+        for (let aLog of dailyLog) {
+            let newLog = document.createElement('tr');
+            newLog.innerHTML = `
+                    <td>${aLog.startH}:${aLog.startM}</td>
+                    <td>~</td>
+                    <td>${aLog.endH}:${aLog.endM}</td>
+                    <td>${aLog.taskName}</td>
+                    <td>${aLog.usedTime}</td>
+                `
+            logList.append(newLog);
+        }
+    </script>
+</body>
+
+</html>
