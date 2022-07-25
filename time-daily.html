@@ -75,13 +75,6 @@
     <div class="log-field" id="log-field">
         log:
         <table class="log-list" id="log-list">
-            <tr>
-                <td>12:00</td>
-                <td>~</td>
-                <td>13:12</td>
-                <td>default</td>
-                <td>72</td>
-            </tr>
         </table>
     </div>
 
@@ -119,14 +112,23 @@
     </table>
 
     <script>
-        let tasks;
+        
+        init();
+        let tasks = {};
 
 
         let now = new Date();
-        let today = now.getDay();
-        let tomonth = now.getMonth();
+        let todate = now.getDate();
+        let tomonth = now.getMonth() + 1;
 
         let dailyLog = [];
+
+        let idcount = JSON.parse(localStorage.idcount);
+
+        function geneID() {
+            ++idcount;
+            return idcount
+        }
 
 
 
@@ -196,7 +198,7 @@
             inputPushName.value = '';
             inputPushTime.value = '';
             tasks[taskName] = {
-                id: (new Date()).getTime(),
+                id: geneID(),
                 passedTime: 0,
                 expectedTime,
             };
@@ -283,6 +285,10 @@
         }
         // end field
         endbt.addEventListener('click', function () {
+            if (taskOnGoing === null) {
+                return
+            }
+            getTime();
             let now = new Date();
             let htime = now.getHours();
             let mtime = now.getMinutes();
@@ -311,6 +317,7 @@
             taskOnGoing = null;
             taskDisplay.innerText = 'Null';
             taskPassedTime.innerText = '';
+
         })
 
 
@@ -336,12 +343,34 @@
         function save() {
             localStorage.setItem('tasks', JSON.stringify(tasks));
             localStorage.setItem('log', JSON.stringify(dailyLog));
+            localStorage.setItem('logLastDate', JSON.stringify(todate));
+            localStorage.setItem('logLastMonth', JSON.stringify(tomonth));
+            localStorage.setItem('idcount', JSON.stringify(idcount));
         }
         window.onbeforeunload = save;
+
+        function init() {
+            if (localStorage.tasks === undefined) {
+                localStorage.tasks = JSON.stringify({});
+            }
+            if (localStorage.log === undefined) {
+                localStorage.log = JSON.stringify([]);
+            }
+            if (localStorage.logLastDate === undefined) {
+                localStorage.logLastDate = JSON.stringify(0);
+            }
+            if (localStorage.logLastMonth === undefined) {
+                localStorage.logLastMonth = JSON.stringify(0);
+            }
+            if (localStorage.idcount === undefined) {
+                localStorage.idcount = JSON.stringify(0);
+            }
+            
+        }
         taskOnGoing = null;
         getTime();
         setInterval(getTime, 60000);
-        if (today !== undefined && today === now.getDay()) {
+        if (todate !== undefined && todate == localStorage.getItem('logLastDate')) {
             tasks = JSON.parse(localStorage.getItem('tasks'));
             for (let taskI in tasks) {
                 let oneTask = document.createElement('tr');
@@ -349,28 +378,63 @@
                 displayTask(taskI, tasks[taskI]['passedTime'], tasks[taskI]['expectedTime']);
             }
         } else {
-            today = now.getDay();
-            for (let taskI in tasks) {
-                // 啊啊, 这里也想记录下来啊...可恶.
+            let wek = now.getDay();
+            if (wek == 0) {
+                tasks = {
+                    '周记': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    '规划下一周的事情, 计算下周事务的预计时间': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 40,
+                    },
+                }
             }
+            else if (wek == 1) {
+                tasks = {
+                    'default 1': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'default 2': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                }
+            }
+            else if (wek == 2) {
+
+            }
+            // ..
         }
         dailyLog = JSON.parse(localStorage.getItem('log'));
-
-        if (localStorage.getItem('logLastMonth') != tomonth && localStorage.getItem('logLastDay') != today) {
-            dailyLog.push(`${tomonth}.${today}`);
-            localStorage.setItem('logLastDay', today);
+        if (localStorage.getItem('logLastMonth') != tomonth || localStorage.getItem('logLastDate') != todate) {
+            dailyLog.push(`${tomonth}.${todate}`);
+            localStorage.setItem('logLastDate', todate);
             localStorage.setItem('logLastMonth', tomonth);
         }
-
         for (let aLog of dailyLog) {
             let newLog = document.createElement('tr');
-            newLog.innerHTML = `
+            if (aLog.startH === undefined) {
+                newLog.innerHTML = `
+                    <td>
+                        @${aLog}
+                    </td>
+                `;
+            } else {
+                newLog.innerHTML = `
                     <td>${aLog.startH}:${aLog.startM}</td>
                     <td>~</td>
                     <td>${aLog.endH}:${aLog.endM}</td>
                     <td>${aLog.taskName}</td>
                     <td>${aLog.usedTime}</td>
                 `
+            }
             logList.append(newLog);
         }
     </script>
