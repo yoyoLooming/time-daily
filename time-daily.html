@@ -66,6 +66,8 @@
 
 <body>
     <div class="info-field" id="info-field">
+        <div>今日学习</div>
+        <div id="todate-passed-time"></div>
         <div>当前时间</div>
         <div id="time-display"></div>
         <div>当前任务</div>
@@ -112,10 +114,13 @@
     </table>
 
     <script>
-        
+
         init();
+        
         let tasks = {};
 
+        let today_log = JSON.parse(localStorage.today_log);
+        let todate_time = JSON.parse(localStorage.todate_time);
 
         let now = new Date();
         let todate = now.getDate();
@@ -141,6 +146,7 @@
         let timeDisplay = document.querySelector('#time-display');
         let taskDisplay = document.querySelector('#task-display');
         let taskPassedTime = document.querySelector('#task-passed-time');
+        let todatePassedTime = document.querySelector('#todate-passed-time');
 
         // log field
         let logField = document.querySelector('#log-field');
@@ -310,14 +316,13 @@
                     <td>${htime}:${mtime}</td>
                     <td>${taskOnGoing}</td>
                     <td>${usedTime}</td>
-                
             `
             logList.append(newLog);
             tasks[taskOnGoing]['passedTime'] += 60 * (htime - startTime.h) + mtime - startTime.m;
             taskOnGoing = null;
             taskDisplay.innerText = 'Null';
             taskPassedTime.innerText = '';
-
+            dailyLog[today_log].study_time += 60 * (htime - startTime.h) + mtime - startTime.m;
         })
 
 
@@ -333,11 +338,15 @@
             if (taskOnGoing !== null) {
                 let usedTime = (60 * (htime - startTime.h) + mtime - startTime.m)
                 taskPassedTime.innerHTML = usedTime;
+                todatePassedTime.innerHTML = todate_time + usedTime;
+                document.querySelector(`#log-index-${today_log}`).innerHTML=`🧠${todate_time + usedTime}`
+                document.querySelector("#todate-passed-time").innerHTML = todate_time + usedTime;
                 if (tasks[taskOnGoing]['passedTime'] + usedTime === tasks[taskOnGoing]['expectedTime']) {
                     music.play();
                 }
                 let taskOnGoingPassedTime = document.querySelector(`#tasks-time-used-${tasks[taskOnGoing]['id']}`);
                 taskOnGoingPassedTime.innerHTML = tasks[taskOnGoing]['passedTime'] + usedTime;
+
             }
         }
         function save() {
@@ -346,6 +355,8 @@
             localStorage.setItem('logLastDate', JSON.stringify(todate));
             localStorage.setItem('logLastMonth', JSON.stringify(tomonth));
             localStorage.setItem('idcount', JSON.stringify(idcount));
+            localStorage.setItem('today_log', JSON.stringify(today_log));
+            localStorage.setItem('todate_time', JSON.stringify(todate_time));
         }
         window.onbeforeunload = save;
 
@@ -365,7 +376,13 @@
             if (localStorage.idcount === undefined) {
                 localStorage.idcount = JSON.stringify(0);
             }
-            
+            if (localStorage.today_log === undefined) {
+                localStorage.today_log = JSON.stringify(0);
+            }
+            if (localStorage.todate_time === undefined) {
+                localStorage.todate_time = JSON.stringify(0);
+            }
+
         }
         taskOnGoing = null;
         getTime();
@@ -393,14 +410,75 @@
                     },
                 }
             }
+            /*
             else if (wek == 1) {
                 tasks = {
-                    'default 1': {
+                    '锻炼': {
                         id: geneID(),
                         passedTime: 0,
                         expectedTime: 20,
                     },
-                    'default 2': {
+                    '画画': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'LingQ': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 15,
+                    },
+                    '英语阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    'RSS': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '写作': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    '阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    'SuperMemo-白金之星': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-紫色隐者': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-红色魔术师': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-绿色法皇': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-银色战车': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '学一道题': {
                         id: geneID(),
                         passedTime: 0,
                         expectedTime: 20,
@@ -408,22 +486,408 @@
                 }
             }
             else if (wek == 2) {
-
+                tasks = {
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '画画': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'LingQ': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 15,
+                    },
+                    '英语阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    'RSS': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '写作': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    '阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    'SuperMemo-白金之星': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-紫色隐者': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-红色魔术师': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-绿色法皇': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-银色战车': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '学一道题': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                }
             }
-            // ..
+            else if (wek == 3) {
+                tasks = {
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '画画': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'LingQ': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 15,
+                    },
+                    
+                    '英语阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    'RSS': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '写作': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    '阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    'SuperMemo-白金之星': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-紫色隐者': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-红色魔术师': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-绿色法皇': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-银色战车': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '学一道题': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                }
+            }
+            else if (wek == 4) {
+                tasks = {
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '画画': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'LingQ': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 15,
+                    },
+                    '英语阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    'RSS': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '写作': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    '阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    'SuperMemo-白金之星': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-紫色隐者': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-红色魔术师': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-绿色法皇': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-银色战车': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '学一道题': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                }
+            }
+            else if (wek == 5) {
+                tasks = {
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '画画': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'LingQ': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 15,
+                    },
+                    '英语阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    'RSS': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '写作': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    '阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    'SuperMemo-白金之星': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-紫色隐者': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-红色魔术师': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-绿色法皇': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-银色战车': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '学一道题': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                }
+            }
+            else if (wek == 6) {
+                tasks = {
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '画画': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'LingQ': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 15,
+                    },
+                    
+                    '英语阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    'RSS': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '写作': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 10,
+                    },
+                    '锻炼': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    '阅读': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    },
+                    '收集信息': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 120,
+                    },
+                    'SuperMemo-白金之星': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-紫色隐者': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-红色魔术师': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-绿色法皇': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    'SuperMemo-银色战车': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                    '学一道题': {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 20,
+                    },
+                }
+            }
+            */
+
         }
         dailyLog = JSON.parse(localStorage.getItem('log'));
         if (localStorage.getItem('logLastMonth') != tomonth || localStorage.getItem('logLastDate') != todate) {
-            dailyLog.push(`${tomonth}.${todate}`);
+            today_log = dailyLog.length;
+            todate_time = 0;
+            dailyLog.push({
+                date: `${tomonth}.${todate}`,
+                study_time: 0,
+            });
             localStorage.setItem('logLastDate', todate);
             localStorage.setItem('logLastMonth', tomonth);
         }
-        for (let aLog of dailyLog) {
+        for (const [i, aLog] of dailyLog.entries()) {
             let newLog = document.createElement('tr');
             if (aLog.startH === undefined) {
                 newLog.innerHTML = `
                     <td>
-                        @${aLog}
+                        🤗${aLog.date}
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td id="log-index-${i}">
+                        🧠${aLog.study_time}
                     </td>
                 `;
             } else {
@@ -437,6 +901,8 @@
             }
             logList.append(newLog);
         }
+        // window.scrollTo(0, document.body.scrollHeight);
+
     </script>
 </body>
 
