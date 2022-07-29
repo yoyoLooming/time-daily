@@ -311,10 +311,12 @@
                 usedTime,
             })
             newLog.innerHTML = `
+                    <td>☘️</td>
                     <td>${startTime.h}:${startTime.m}</td>
                     <td>~</td>
                     <td>${htime}:${mtime}</td>
                     <td>${taskOnGoing}</td>
+                    <td>🐾</td>
                     <td>${usedTime}</td>
             `
             logList.append(newLog);
@@ -323,7 +325,6 @@
             taskDisplay.innerText = 'Null';
             taskPassedTime.innerText = '';
             dailyLog[today_log].study_time += 60 * (htime - startTime.h) + mtime - startTime.m;
-
         })
 
 
@@ -340,7 +341,7 @@
                 let usedTime = (60 * (htime - startTime.h) + mtime - startTime.m)
                 taskPassedTime.innerHTML = usedTime;
                 todatePassedTime.innerHTML = dailyLog[today_log].study_time + usedTime; + usedTime;
-                document.querySelector(`#log-index-${today_log}`).innerHTML=`🧠${dailyLog[today_log].study_time + usedTime}`;
+                document.querySelector(`#log-index-${today_log}`).innerHTML=`${dailyLog[today_log].study_time + usedTime}`;
                 if (tasks[taskOnGoing]['passedTime'] + usedTime === tasks[taskOnGoing]['expectedTime']) {
                     music.play();
                 }
@@ -408,7 +409,6 @@
                 }
             }
             
-            /* *** */
 
         }
         dailyLog = JSON.parse(localStorage.getItem('log'));
@@ -426,21 +426,28 @@
             if (aLog.startH === undefined) {
                 newLog.innerHTML = `
                     <td>
-                        🤗${aLog.date}
+                        🤗
+                    </td>
+                    <td>
+                        ${aLog.date}
                     </td>
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td id="log-index-${i}">
-                        🧠${aLog.study_time}
+                    <td>
+                        🧠
+                    </td>
+                    <td id="log-index-${i}">${aLog.study_time}
                     </td>
                 `;
             } else {
                 newLog.innerHTML = `
+                    <td>☘️</td>
                     <td>${aLog.startH}:${aLog.startM}</td>
                     <td>~</td>
                     <td>${aLog.endH}:${aLog.endM}</td>
                     <td>${aLog.taskName}</td>
+                    <td>🐾</td>
                     <td>${aLog.usedTime}</td>
                 `
             }
