@@ -195,10 +195,10 @@
 
             if (isSameDay) {
                 tasks = JSON.parse(localStorage.getItem('tasks'));
-                
             }
             else {
                 let wek = now.getDay();
+                tasks = {};
                 if (wek == 0) {
                     tasks = {
                         '周记': {
