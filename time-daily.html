@@ -16,7 +16,6 @@
             margin: 100px 0 100px 200px;
         }
 
-
         .button-field {
             height: 100px;
             float: left;
@@ -199,86 +198,73 @@
             else {
                 let wek = now.getDay();
                 tasks = {};
-                if (wek == 0) { // 表示星期日
-                    tasks = {
-                        '周记': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 30,
-                        },
-                        '规划下一周的事情, 计算下周事务的预计时间': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 40,
-                        },
-                    }
-                }
-                // else if (wek == 1) {} // 表示星期1
-                /* else { // 下面是我自己的默认每日任务, 就是除了每天安排的特定的一些事之外, 每天有固定的每日任务. 如果你也想添加每日任务, 可以照着这个改改.
-                    tasks = {
-                        '锻炼': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 30,
-                        },
-                        'LingQ': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 10,
-                        },
-                        '英语阅读': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 20,
-                        },
-                        'RSS': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 20,
-                        },
-                        '写作': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 10,
-                        },
-                        '锻炼': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 30,
-                        },
-                        '阅读': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 30,
-                        },
-                        'SuperMemo 梅': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 20,
-                        },
-                        'SuperMemo 兰': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 20,
-                        },
-                        'SuperMemo 竹': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 20,
-                        },
-                        'SuperMemo 菊': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 20,
-                        },
-                        '学一道题': {
-                            id: geneID(),
-                            passedTime: 0,
-                            expectedTime: 20,
-                        },
-                    }
-                }*/
-
+                // if (wek == 0) { // 表示星期日
+                //     tasks = {
+                //         '周记': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 30,
+                //         },
+                //         '规划下一周的事情, 计算下周事务的预计时间': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 40,
+                //         },
+                //     }
+                // }
+                // // 示例: else if (wek == 1) {} // 表示星期1
+                // else { // 下面是我自己的默认每日任务, 就是除了每天安排的特定的一些事之外, 每天有固定的每日任务. 如果你也想添加每日任务, 可以照着这个改改.
+                //     tasks = {
+                //         '锻炼': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 30,
+                //         },
+                //         '英语阅读': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 20,
+                //         },
+                //         'RSS': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 20,
+                //         },
+                //         '写作': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 10,
+                //         },
+                //         '阅读': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 30,
+                //         },
+                //         'SuperMemo': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 100,
+                //         },
+                //         '学一道题': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 20,
+                //         },
+                //         '50个单词': {
+                //             id: geneID(),
+                //             passedTime: 0,
+                //             expectedTime: 30,
+                //         },
+                //     }
+                // }
+                
+                // if (wek == 6) {
+                //     tasks['查看各种周刊'] = {
+                //         id: geneID(),
+                //         passedTime: 0,
+                //         expectedTime: 60,
+                //     };
+                // }
             }
 
             if (isSameDay) {
