@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 
 <head>
     <title>time daily</title>
+    <meta charset="utf-8">
+    <meta name="description" content="是个辅助我记日记的东西, 类似柳比歇夫的时间管理法.">
     <style>
         .info-field {
             position: fixed;
@@ -60,6 +62,13 @@
         .delete-task-button:active {
             background-color: red;
         }
+        .quotation {
+            width: 500px;
+            margin: 40px;
+        }
+        .quotation figcaption {
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -79,6 +88,16 @@
         <table class="log-list" id="log-list">
         </table>
     </div>
+    <figure class="quotation">
+        <blockquote>
+            我追求的并不只是一个 ⌈结果⌋ <br>
+            一旦只追求 ⌈结果⌋ 人就容易想发设发抄近路<br>
+            在抄近路的过程中 人又容易迷失真相<br>
+            做事的干劲也会逐渐消磨殆尽<br>
+
+        </blockquote>
+        <figcaption>- ⟪JOJO的奇妙冒险⟫</figcaption>
+    </figure>
 
     <div class="button-field" id="button-field">
         <button class="operation-button" id="button-push">push</button>
@@ -198,73 +217,45 @@
             else {
                 let wek = now.getDay();
                 tasks = {};
-                // if (wek == 0) { // 表示星期日
-                //     tasks = {
-                //         '周记': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 30,
-                //         },
-                //         '规划下一周的事情, 计算下周事务的预计时间': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 40,
-                //         },
-                //     }
-                // }
-                // // 示例: else if (wek == 1) {} // 表示星期1
-                // else { // 下面是我自己的默认每日任务, 就是除了每天安排的特定的一些事之外, 每天有固定的每日任务. 如果你也想添加每日任务, 可以照着这个改改.
-                //     tasks = {
-                //         '锻炼': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 30,
-                //         },
-                //         '英语阅读': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 20,
-                //         },
-                //         'RSS': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 20,
-                //         },
-                //         '写作': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 10,
-                //         },
-                //         '阅读': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 30,
-                //         },
-                //         'SuperMemo': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 100,
-                //         },
-                //         '学一道题': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 20,
-                //         },
-                //         '50个单词': {
-                //             id: geneID(),
-                //             passedTime: 0,
-                //             expectedTime: 30,
-                //         },
-                //     }
-                // }
-                
-                // if (wek == 6) {
-                //     tasks['查看各种周刊'] = {
-                //         id: geneID(),
-                //         passedTime: 0,
-                //         expectedTime: 60,
-                //     };
-                // }
+
+                tasks['SuperMemo'] = {
+                    id: geneID(),
+                    passedTime: 0,
+                    expectedTime: 150,
+                };
+                tasks['锻炼'] = {
+                    id: geneID(),
+                    passedTime: 0,
+                    expectedTime: 30,
+                };
+                tasks['阅读'] = {
+                    id: geneID(),
+                    passedTime: 0,
+                    expectedTime: 30,
+                };
+                tasks['写作'] = {
+                    id: geneID(),
+                    passedTime: 0,
+                    expectedTime: 30,
+                };
+                if (wek == 0) { // 表示星期日
+                    tasks['查看各种周刊'] = {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 60,
+                    };
+                    tasks['周记'] = {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 30,
+                    };
+                    tasks['规划下一周的事情, 计算下周事务的预计时间'] = {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: 40,
+                    };
+
+                }
             }
 
             if (isSameDay) {
@@ -361,8 +352,12 @@
             let newTask = document.createElement('tr');
             newTask.setAttribute('id', 'tasks-' + tasks[taskName]['id']);
 
+            let checkbox = document.createElement('input');
+            checkbox.setAttribute('type', 'checkbox');
+
             let newTaskName = document.createElement('td');
             newTaskName.setAttribute('id', 'tasks-name-' + tasks[taskName]['id']);
+            newTaskName.append(checkbox);
             newTaskName.append(taskName);
 
             let leftBracket = document.createElement('td');
@@ -393,7 +388,7 @@
             });
             deleteTD.append(deleteBT);
 
-            tasksField.prepend(newTask);
+            tasksField.append(newTask);
             newTask.append(newTaskName);
             newTask.append(leftBracket);
             newTask.append(newTaskTimeUsed);
