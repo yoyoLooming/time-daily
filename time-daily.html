@@ -62,10 +62,12 @@
         .delete-task-button:active {
             background-color: red;
         }
+
         .quotation {
             width: 500px;
             margin: 40px;
         }
+
         .quotation figcaption {
             text-align: right;
         }
@@ -215,6 +217,9 @@
                 tasks = JSON.parse(localStorage.getItem('tasks'));
             }
             else {
+                // 糟糕,
+                // 这个地方和别的日期类的数据逻辑不一样啊,
+                // 虽然现在没啥大不了的, 以后就不知道了.
                 let wek = now.getDay();
                 tasks = {};
 
@@ -238,6 +243,11 @@
                     passedTime: 0,
                     expectedTime: 30,
                 };
+                tasks['RSS'] = {
+                    id: geneID(),
+                    passedTime: 0,
+                    expectedTime: 30,
+                };
                 if (wek == 0) { // 表示星期日
                     tasks['查看各种周刊'] = {
                         id: geneID(),
@@ -254,7 +264,16 @@
                         passedTime: 0,
                         expectedTime: 40,
                     };
-
+                    tasks['整理这一周的生活'] = {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: -1,
+                    };
+                    tasks['度过休闲的周日'] = {
+                        id: geneID(),
+                        passedTime: 0,
+                        expectedTime: -1,
+                    };
                 }
             }
 
